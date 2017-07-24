@@ -18,7 +18,7 @@ def login(request):
         else:
             result = {'result' : False, 'message': "Incorrect password." }
     except Exception as e:
-        result = {'result' : False, 'message': "Incorrect username or password."}
+        result = {'result' : False, 'message': str(e)}
     return Response(result)
 
 @api_view(['POST'])
