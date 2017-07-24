@@ -1,9 +1,11 @@
 from mongoengine.django.auth import User
 from django.http import Http404
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from .models import MongoToken
 from user_app.serializers import UserSerializer
+from rest_framework.permissions import IsAuthenticated
+from auth_app.authentication import MongoTokenAuthentication
 
 @api_view(['POST'])
 def login(request):
@@ -21,13 +23,20 @@ def login(request):
         result = {'result' : False, 'message': str(e)}
     return Response(result)
 
-@api_view(['POST'])
+@api_view(['GET'])
+@authentication_classes((MongoTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def logout(request):
-    token = MongoToken.objects.get(key=request.data['token'])
-    token.delete()
-    return Response('Logout completed.')
+    try:
+        token = MongoToken.objects.get(key=request.auth.key)
+        token.delete()
+        return Response('logout completed.')
+    except Exception as e:
+        return Response(str(e))
 
 @api_view(['POST'])
+@authentication_classes((MongoTokenAuthentication))
+@permission_classes((IsAuthenticated,))
 def createuser(request):
     result = {}
     try:
