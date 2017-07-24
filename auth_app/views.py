@@ -23,7 +23,7 @@ def login(request):
         result = {'result' : False, 'message': str(e)}
     return Response(result)
 
-@api_view(['GET'])
+@api_view(['POST'])
 @authentication_classes((MongoTokenAuthentication,))
 @permission_classes((IsAuthenticated,))
 def logout(request):
