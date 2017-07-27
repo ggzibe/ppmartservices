@@ -1,4 +1,4 @@
-staticfiles
+staticfiles/
 *.log
 *.pot
 *.pyc
