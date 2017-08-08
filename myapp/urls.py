@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^employees/',include('employee_app.urls')),
     url(r'^product/types/',include('product_type_app.urls')),
     url(r'^product/groups/',include('product_group_app.urls')),
+    url(r'^products/',include('product_app.urls')),
 ]
