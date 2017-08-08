@@ -18,15 +18,18 @@ class UserList(APIView):
             serializer = UserSerializer(queryset, many=True)
             return Response(serializer.data)
         except Exception as e:
-            return Response(str(e))
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 @authentication_classes((MongoTokenAuthentication))
 @permission_classes((IsAuthenticated,))
 def myuser(request, pk):
-    user = User.objects.get(username=pk)
-    serializer = UserSerializer(user)
-    return Response(serializer.data)
+    try:
+        user = User.objects.get(username=pk)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['DELETE'])
 @authentication_classes((MongoTokenAuthentication))
@@ -37,4 +40,4 @@ def delete(request, pk):
         user.delete()
         return Response({'message': 'delete completed.'})
     except Exception:
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

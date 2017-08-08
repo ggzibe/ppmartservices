@@ -19,9 +19,9 @@ def login(request):
             result = {'result' : True, 'message': "Login completed.", 'data': {'user': serializer.data, 'token': token.key}}
         else:
             result = {'result' : False, 'message': "Incorrect password." }
+        return Response(result)
     except Exception as e:
-        result = {'result' : False, 'message': str(e)}
-    return Response(result)
+        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 @authentication_classes((MongoTokenAuthentication,))
@@ -32,19 +32,20 @@ def logout(request):
         token.delete()
         return Response('logout completed.')
     except Exception as e:
-        return Response(str(e))
+        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
-@authentication_classes((MongoTokenAuthentication))
-@permission_classes((IsAuthenticated,))
 def createuser(request):
     result = {}
     try:
         if request.data['is_admin'] is True or request.data['is_admin'] == "true" or request.data['is_admin'] == "True":
-            User.create_superuser(request.data['username'], request.data['password'], request.data['email'])
+            User.create_user(request.data['username'], request.data['password'], request.data['email'])
+            user = User.objects.get(username = request.data['username'])
+            user.is_superuser = True
+            user.save()
         else:
             User.create_user(request.data['username'], request.data['password'], request.data['email'])
         result = {'result' : True, 'message': "Register completed."}
+        return Response(result)
     except Exception as e:
-        result = {'result' : False, 'message': "Register failed: " + str(e)}
-    return Response(result)
+        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

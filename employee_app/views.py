@@ -1,6 +1,5 @@
 from employee_app.models import EmployeeRole, Employee, EmployeeLog
 from employee_app.serializers import EmployeeRoleSerializer, EmployeeSerializer, EmployeeReadOnlySerializer
-from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -17,15 +16,18 @@ class EmployeeRoleListView(APIView):
             queryset = EmployeeRole.objects().all()
             serializer = EmployeeRoleSerializer(queryset, many=True)
             return Response(serializer.data)
-        except Exception:
-            raise Http404
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request, format=None):
-        serializer = EmployeeRoleSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = EmployeeRoleSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class EmployeeRoleDetailView(APIView):
     authentication_classes = (MongoTokenAuthentication,)
@@ -36,13 +38,16 @@ class EmployeeRoleDetailView(APIView):
             role = EmployeeRole.objects.get(pk=pk)
             serializer = EmployeeRoleSerializer(role)
             return Response(serializer.data)
-        except Exception:
-            raise Http404
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request, pk, format=None):
-        role = EmployeeRole.objects.get(pk=pk)
-        role.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            role = EmployeeRole.objects.get(pk=pk)
+            role.delete()
+            return Response({'message': 'delete completed.'})
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class EmployeeListView(APIView):
     authentication_classes = (MongoTokenAuthentication,)
@@ -53,37 +58,46 @@ class EmployeeListView(APIView):
             queryset = Employee.objects().all()
             serializer = EmployeeReadOnlySerializer(queryset, many=True)
             return Response(serializer.data)
-        except Exception:
-            raise Http404
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request, format=None):
-        serializer = EmployeeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = EmployeeSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class EmployeeDetailView(APIView):
     authentication_classes = (MongoTokenAuthentication,)
     permission_classes = (IsAuthenticated,)
-    
+
     def get(self, request, pk, format=None):
         try:
             employee = Employee.objects.get(pk=pk)
             serializer = EmployeeReadOnlySerializer(employee)
             return Response(serializer.data)
-        except Exception:
-            raise Http404
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def put(self, request, pk, format=None):
-        employee = Employee.objects.get(pk=pk)
-        serializer = EmployeeSerializer(employee, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            employee = Employee.objects.get(pk=pk)
+            serializer = EmployeeSerializer(employee, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request, pk, format=None):
-        employee = Employee.objects.get(pk=pk)
-        employee.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            employee = Employee.objects.get(pk=pk)
+            employee.delete()
+            return Response({'message': 'delete completed.'})
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
