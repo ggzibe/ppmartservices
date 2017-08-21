@@ -3,7 +3,7 @@ from mongoengine import *
 # Create your models here.
 class ProductType(Document):
     name = StringField(max_length=100, unique=True, required=True)
-    description = StringField(max_length=255, required=False)
+    description = StringField(max_length=255, null=True)
 
     class Meta:
         verbose_name = 'product_type'
