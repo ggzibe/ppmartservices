@@ -53,7 +53,7 @@ class ProductDetailView(APIView):
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def  delete(self, request, pk, format=None):
+    def delete(self, request, pk, format=None):
         try:
             product = Product.objects.get(pk=pk)
             product.delete()
